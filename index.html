@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+  <meta charset="UTF-8">
+  <title>Click Button with Firebase!</title>
+
+  <link rel="stylesheet" href="assets/reset.css">
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+
+
+  <!-- -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+
+</head>
+
+<body>
+
+<h1 class="jumbotron text-center" style="background-color: black; color:white;"> Rock Paper Scissors</h1>
+
+<div id ="readyPlayer">
+<div class="container text-center"id="startDiv">
+
+  <button id="set-player">Start</button>
+  <input type="text" id="playerName" placeholder="Nickname">  
+
+</div>
+</div>
+
+<div class="container" style="padding-top:30px;">
+  <div class="row">
+    <div id="p2box"class="col-sm" style="width:120px; height:120px; border-style:solid ; border-width:2px;border-color:black;">
+      <p id="P1Ptag">Waiting for player one..</p>
+    </div>
+    <div class="col-sm" style="width:120px; height:120px;  border-style:solid ; border-width:2px;border-color:black;">
+
+    </div>
+    <div id="p2box"class="col-sm" style="width:120px; height:120px;  border-style:solid ; border-width:2px;border-color:black;">
+        <p id="P1Ptag">Waiting for player two..</p>
+    </div>
+  </div>
+</div>
+  
+
+
+  <!-- -->
+
+  <script src="https://www.gstatic.com/firebasejs/5.1.0/firebase.js"></script>
+
+
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyDIzSmVmjIxCfICByv_gr2GnzrWCk1UHqk",
+      authDomain: "gamingrecords-35fad.firebaseapp.com",
+      databaseURL: "https://gamingrecords-35fad.firebaseio.com",
+      projectId: "gamingrecords-35fad",
+      storageBucket: "",
+      messagingSenderId: "928882745709"
+    };
+    firebase.initializeApp(config);
+  
+    // VARIABLES
+    // --------------------------------------------------------------------------------
+
+    var database = firebase.database();
+    
+    
+    var numOfPlayers=0;
+   
+  
+
+    // FUNCTIONS + EVENTS
+    // --------------------------------------------------------------------------------
+
+    $("#set-player").on("click", function() {     
+      var playerName = $("#playerName").val();    
+      database.ref("Players/"+ "1").on("value", function(snapshot) {
+      var player = snapshot.val();
+      if(player!=""){
+        numOfPlayers=1; 
+        console.log(numOfPlayers);
+      }  
+      console.log(player);
+      },function(errorObject) {
+      console.log("The read failed: " + errorObject.code);
+      });
+
+      /*if(numOfPlayers==0){
+        var playerOneName = $("#playerName").val();
+        playerName = playerOneName;
+      }
+      if(numOfPlayers==1){
+        var playerTwoName = $("#playerName").val();
+        playerName = playerTwoName;
+      }
+  */
+
+
+      if(playerName != ""){
+        numOfPlayers++;
+        $("#startDiv").remove();
+        $("#readyPlayer").append("<p>Welcome "+playerName+". You are player 1</p>");
+        var myRef = database.ref();
+      myRef.child("Players").child(numOfPlayers).set({
+          Name: playerName,
+          Wins: "0",
+          Losses:"0",
+          Date: firebase.database.ServerValue.TIMESTAMP
+      });
+      
+      
+      }
+      else{
+        alert("Please enter your name!")
+      }
+
+
+    });
+/*
+
+$("#clear-message").on("click", function() {
+      $("p").remove();
+      $("h2").text("");
+      
+      numOfEmployees = 0;
+      database.ref().set({});
+      
+    }); ////////////////////////////////////
+    // MAIN PROCESS + INITIAL CODE
+    // --------------------------------------------------------------------------------
+*/
+
+
+  
+
+
+  
+
+  </script>
+
+</body>
+
+</html>
