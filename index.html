@@ -7,8 +7,10 @@
   <title>Click Button with Firebase!</title>
 
   <link rel="stylesheet" href="assets/reset.css">
+  <link rel="stylesheet" href="assets/style.css">
 
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB"
+    crossorigin="anonymous">
 
 
   <!-- -->
@@ -19,31 +21,31 @@
 
 <body>
 
-<h1 class="jumbotron text-center" style="background-color: black; color:white;"> Rock Paper Scissors</h1>
+  <h1 class="jumbotron text-center" style="background-color: black; color:white;"> Rock Paper Scissors</h1>
 
-<div id ="readyPlayer">
-<div class="container text-center"id="startDiv">
+  <div id="readyPlayer">
+    <div class="container text-center" id="startDiv">
 
-  <button id="set-player">Start</button>
-  <input type="text" id="playerName" placeholder="Nickname">  
+      <button id="set-player">Start</button>
+      <input type="text" id="playerName" placeholder="Nickname">
 
-</div>
-</div>
-
-<div class="container" style="padding-top:30px;">
-  <div class="row">
-    <div id="p2box"class="col-sm" style="width:120px; height:120px; border-style:solid ; border-width:2px;border-color:black;">
-      <p id="P1Ptag">Waiting for player one..</p>
-    </div>
-    <div class="col-sm" style="width:120px; height:120px;  border-style:solid ; border-width:2px;border-color:black;">
-
-    </div>
-    <div id="p2box"class="col-sm" style="width:120px; height:120px;  border-style:solid ; border-width:2px;border-color:black;">
-        <p id="P1Ptag">Waiting for player two..</p>
     </div>
   </div>
-</div>
-  
+
+  <div class="container" style="padding-top:30px;">
+    <div class="row">
+      <div id="p1box" class="col-sm" style="width:120px; height:120px; border-style:solid ; border-width:2px;border-color:black;">
+        <p id="P1Ptag">Waiting for player one..</p>
+      </div>
+      <div class="col-sm" style="width:120px; height:120px;  border-style:solid ; border-width:2px;border-color:black;">
+
+      </div>
+      <div id="p2box" class="col-sm" style="width:120px; height:120px;  border-style:solid ; border-width:2px;border-color:black;">
+        <p id="P2Ptag">Waiting for player two..</p>
+      </div>
+    </div>
+  </div>
+
 
 
   <!-- -->
@@ -62,83 +64,96 @@
       messagingSenderId: "928882745709"
     };
     firebase.initializeApp(config);
-  
+
     // VARIABLES
     // --------------------------------------------------------------------------------
 
     var database = firebase.database();
-    
-    
-    var numOfPlayers=0;
-   
-  
+    var numOfPlayers;
+    var tempVar;
+    var playerName = $("#playerName").val();
+
 
     // FUNCTIONS + EVENTS
-    // --------------------------------------------------------------------------------
 
-    $("#set-player").on("click", function() {     
-      var playerName = $("#playerName").val();    
-      database.ref("Players/"+ "1").on("value", function(snapshot) {
+
+    /////// load Player 1 --------------------------------------------------------
+    database.ref("Players/1/" + "Name").on("value", function (snapshot) {
       var player = snapshot.val();
-      if(player!=""){
-        numOfPlayers=1; 
-        console.log(numOfPlayers);
-      }  
-      console.log(player);
-      },function(errorObject) {
-      console.log("The read failed: " + errorObject.code);
-      });
-
-      /*if(numOfPlayers==0){
-        var playerOneName = $("#playerName").val();
-        playerName = playerOneName;
+      tempVar = player;
+      console.log(snapshot.val());
+      if (tempVar !== null) {
+        $("#P1Ptag").text("Player 1: " + player);
       }
-      if(numOfPlayers==1){
-        var playerTwoName = $("#playerName").val();
-        playerName = playerTwoName;
+    });
+    database.ref("Players/1/" + "Wins").on("value", function (snapshot) {
+      var wins = snapshot.val();
+      console.log(snapshot.val());
+      if (wins !== null) {
+        $("#p1box").append("<p class='stats' style='float:bottom'> Wins: " + wins + "</p>");
       }
-  */
+    });
+    database.ref("Players/1/" + "Losses").on("value", function (snapshot) {
+      var losses = snapshot.val();
+      console.log(snapshot.val());
+      if (losses !== null) {
+        $("#p1box").append("<p class='stats' style='float:bottom'> Losses: " + losses + "</p>");
+      }
+    });
+
+    //load player 2 ----------------------------------------------------------------------
+    database.ref("Players/2/" + "Name").on("value", function (snapshot) {
+      var player = snapshot.val();
+      console.log(snapshot.val());
+      if (player !== null) {
+        $("#P2Ptag").text("Player 2: " + player);
+      }
+    });
+    database.ref("Players/2/" + "Wins").on("value", function (snapshot) {
+      var wins = snapshot.val();
+      console.log(snapshot.val());
+      if (wins !== null) {
+        $("#p2box").append("<p class='stats' style='float:bottom'> Wins: " + wins + "</p>");
+      }
+    });
+    database.ref("Players/2/" + "Losses").on("value", function (snapshot) {
+      var losses = snapshot.val();
+      console.log(snapshot.val());
+      if (losses !== null) {
+        $("#p2box").append("<p class='stats' style='float:bottom'> Losses: " + losses + "</p>");
+      }
+    });
 
 
-      if(playerName != ""){
-        numOfPlayers++;
-        $("#startDiv").remove();
-        $("#readyPlayer").append("<p>Welcome "+playerName+". You are player 1</p>");
-        var myRef = database.ref();
-      myRef.child("Players").child(numOfPlayers).set({
+    $("#set-player").on("click", function () {
+      playerName = $("#playerName").val();
+      if (tempVar !== null) {
+        numOfPlayers = 1;
+      }
+      else {
+        numOfPlayers = 0;
+      }
+      $("#startDiv").remove();
+      var myRef = database.ref();
+      if (numOfPlayers == 0 && playerName !== "") {
+        $("#readyPlayer").append("<p>Welcome " + playerName + ". You are player 1</p>");
+        myRef.child("Players").child(numOfPlayers + 1).set({
           Name: playerName,
           Wins: "0",
-          Losses:"0",
+          Losses: "0",
           Date: firebase.database.ServerValue.TIMESTAMP
-      });
-      
-      
+        });
       }
-      else{
-        alert("Please enter your name!")
+      if (numOfPlayers == 1 && playerName !== "") {
+        $("#readyPlayer").append("<p>Welcome " + playerName + ". You are player 2</p>");
+        myRef.child("Players").child(numOfPlayers + 1).set({
+          Name: playerName,
+          Wins: "0",
+          Losses: "0",
+          Date: firebase.database.ServerValue.TIMESTAMP
+        });
       }
-
-
     });
-/*
-
-$("#clear-message").on("click", function() {
-      $("p").remove();
-      $("h2").text("");
-      
-      numOfEmployees = 0;
-      database.ref().set({});
-      
-    }); ////////////////////////////////////
-    // MAIN PROCESS + INITIAL CODE
-    // --------------------------------------------------------------------------------
-*/
-
-
-  
-
-
-  
 
   </script>
 
