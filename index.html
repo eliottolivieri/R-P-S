@@ -6,8 +6,6 @@
   <meta charset="UTF-8">
   <title>Click Button with Firebase!</title>
 
-  <link rel="stylesheet" href="assets/reset.css">
-  <link rel="stylesheet" href="assets/style.css">
 
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB"
     crossorigin="anonymous">
@@ -72,9 +70,17 @@
     var numOfPlayers;
     var tempVar;
     var playerName = $("#playerName").val();
+    var playerTurn = 1;
+    var playerOneWins;
+    var playerOneLosses;
+    var playerTwoWins;
+    var playerTwoLosses;
+    var fullGame;
+    var whosPlaying1;
+    var whosPlaying2;
 
+    // FUNCTIONS
 
-    // FUNCTIONS + EVENTS
 
 
     /////// load Player 1 --------------------------------------------------------
@@ -125,6 +131,7 @@
     });
 
 
+// checks to see how many players are in the game 
     $("#set-player").on("click", function () {
       playerName = $("#playerName").val();
       if (tempVar !== null) {
@@ -133,27 +140,64 @@
       else {
         numOfPlayers = 0;
       }
+
+      ///////// sets the amount of players in the game
+      
+
+      ///  player1  /////////////////////////////////
       $("#startDiv").remove();
       var myRef = database.ref();
       if (numOfPlayers == 0 && playerName !== "") {
+        whosPlaying1 = playerName;
         $("#readyPlayer").append("<p>Welcome " + playerName + ". You are player 1</p>");
+        myRef.child("player1Ref").set(playerName);
+        localStorage.setItem("playerIs", playerName);
         myRef.child("Players").child(numOfPlayers + 1).set({
           Name: playerName,
           Wins: "0",
           Losses: "0",
           Date: firebase.database.ServerValue.TIMESTAMP
         });
+        
       }
+      ///////  player 2  ///////////////////////////
       if (numOfPlayers == 1 && playerName !== "") {
+        whosPlaying2 = playerName;
         $("#readyPlayer").append("<p>Welcome " + playerName + ". You are player 2</p>");
+        myRef.child("player2Ref").set(playerName);
+        localStorage.setItem("playerIs", playerName);
         myRef.child("Players").child(numOfPlayers + 1).set({
           Name: playerName,
           Wins: "0",
           Losses: "0",
           Date: firebase.database.ServerValue.TIMESTAMP
         });
+        fullGame = true;
       }
     });
+
+
+////////  removes the #startDiv so that a third 
+////////  person cannot sign in as player 2  ////////
+
+var myRef2 = database.ref("Players/"+"2");
+myRef2.on("value",function(snapshot){
+  console.log("todays log is" + JSON.stringify(snapshot.val()));
+  if(snapshot.val() !== null){
+    $("#startDiv").remove();
+    $("#readyPlayer").append("<p>Welcome:  "+ localStorage.getItem("playerIs")+"</p>");
+  }
+}, function (errorObject) {
+  console.log("The read failed: " + errorObject.code);
+});
+
+//////////////////////////////////////////
+
+
+
+
+
+
 
   </script>
 
